@@ -3,15 +3,22 @@
 import { useParams } from 'next/navigation';
 import Navbar from "../../components/Navbar";
 import { useFarmingProjects } from '../../hooks/useFarmingProjects';
-import { formatEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
+import { useState } from 'react';
 
 export default function ProjectPage() {
   const params = useParams();
   const projectId = typeof params.id === 'string' ? parseInt(params.id) : 0;
   const { loading, error, projectDetails, investInProjectFn } = useFarmingProjects();
-
+  const [investing, setInvesting] = useState(false);
+  
   // Encontrar el proyecto correcto usando el ID
   const project = projectDetails.find(p => p.id === projectId);
+  
+  // Inicializar el monto de inversión con el monto objetivo
+  const [investmentAmount, setInvestmentAmount] = useState(
+    project ? formatEther(project.targetAmount) : ''
+  );
 
   if (loading) {
     return (
@@ -44,14 +51,24 @@ export default function ProjectPage() {
   }
 
   const handleInvest = async () => {
+    if (!investmentAmount || parseFloat(investmentAmount) <= 0) {
+      alert('Por favor ingresa un monto válido');
+      return;
+    }
+
     try {
-      const result = await investInProjectFn(projectId, project.targetAmount);
+      setInvesting(true);
+      const amountInWei = parseEther(investmentAmount);
+      const result = await investInProjectFn(projectId, amountInWei);
       if (result) {
         alert('Inversión realizada con éxito');
+        setInvestmentAmount('');
       }
     } catch (error) {
       console.error('Error al invertir:', error);
       alert('Error al realizar la inversión');
+    } finally {
+      setInvesting(false);
     }
   };
 
@@ -133,16 +150,75 @@ export default function ProjectPage() {
                       />
                     </div>
                   </div>
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center mb-1">
+                      <label htmlFor="investment" className="block text-sm text-muted-foreground">
+                        Monto a invertir
+                      </label>
+                      <span className="text-sm font-medium text-foreground">
+                        {investmentAmount || '0.00'} ETH
+                      </span>
+                    </div>
+                    <div className="relative h-6">
+                      <input
+                        id="investment"
+                        type="range"
+                        min="0"
+                        max={formatEther(project.targetAmount)}
+                        step="0.01"
+                        value={investmentAmount}
+                        onChange={(e) => setInvestmentAmount(e.target.value)}
+                        className="absolute top-2 inset-x-0 w-full h-1.5 appearance-none cursor-pointer bg-transparent z-30
+                          [&::-webkit-slider-thumb]:appearance-none 
+                          [&::-webkit-slider-thumb]:h-3 
+                          [&::-webkit-slider-thumb]:w-3 
+                          [&::-webkit-slider-thumb]:rounded-full 
+                          [&::-webkit-slider-thumb]:bg-colombia-green 
+                          [&::-webkit-slider-thumb]:cursor-pointer
+                          [&::-webkit-slider-thumb]:shadow-md
+                          [&::-webkit-slider-thumb]:shadow-colombia-green/20
+                          [&::-webkit-slider-thumb]:border
+                          [&::-webkit-slider-thumb]:border-white
+                          [&::-moz-range-thumb]:h-3
+                          [&::-moz-range-thumb]:w-3
+                          [&::-moz-range-thumb]:rounded-full 
+                          [&::-moz-range-thumb]:bg-colombia-green
+                          [&::-moz-range-thumb]:border
+                          [&::-moz-range-thumb]:border-white
+                          [&::-moz-range-thumb]:cursor-pointer
+                          [&::-moz-range-thumb]:shadow-md
+                          [&::-moz-range-thumb]:shadow-colombia-green/20"
+                        disabled={!project.isActive || investing}
+                      />
+                      <div className="absolute top-2 inset-x-0 bg-muted rounded-md h-1.5 z-10" />
+                      <div 
+                        className="absolute top-2 inset-x-0 bg-colombia-green rounded-md h-1.5 z-20" 
+                        style={{ 
+                          width: `${(parseFloat(investmentAmount || '0') / parseFloat(formatEther(project.targetAmount))) * 100}%`,
+                          maxWidth: '100%'
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-3">
+                      <span>0 ETH</span>
+                      <span>{formatEther(project.targetAmount)} ETH</span>
+                    </div>
+                  </div>
                 </div>
                 <button
                   onClick={handleInvest}
-                  disabled={!project.isActive}
+                  disabled={!project.isActive || investing || !investmentAmount}
                   className={`w-full mt-6 py-3 px-4 rounded-lg font-medium transition-colors
-                    ${project.isActive
+                    ${project.isActive && !investing && investmentAmount
                       ? 'bg-colombia-green text-background hover:bg-colombia-yellow hover:text-colombia-green'
                       : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
                 >
-                  {project.isActive ? 'Invertir en este proyecto' : 'Proyecto no disponible'}
+                  {!project.isActive 
+                    ? 'Proyecto no disponible'
+                    : investing
+                      ? 'Procesando inversión...'
+                      : 'Invertir en este proyecto'
+                  }
                 </button>
               </div>
             </div>
