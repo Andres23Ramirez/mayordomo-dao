@@ -3,6 +3,7 @@ import { useWriteContract, usePublicClient } from "wagmi";
 import { CONTRACTS } from "../config/contracts";
 
 export type ProjectDetails = {
+  id: number;
   owner: string;
   title: string;
   description: string;
@@ -72,6 +73,7 @@ export function useFarmingProjects(): FarmingProjectsHook {
         ];
 
         return {
+          id: projectId,
           owner,
           title,
           description,

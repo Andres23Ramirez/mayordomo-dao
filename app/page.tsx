@@ -4,10 +4,16 @@ import { useRouter } from 'next/navigation';
 import Navbar from './components/Navbar';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
+import { useFarmingProjects } from './hooks/useFarmingProjects';
+import { formatEther } from 'viem';
 
 export default function Home() {
   const router = useRouter();
   const { address } = useAccount();
+  const { loading, error, projectDetails } = useFarmingProjects();
+
+  // Tomar solo los primeros 3 proyectos para mostrar en la landing
+  const featuredProjects = projectDetails.slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -62,82 +68,55 @@ export default function Home() {
               <h2 className="text-4xl font-bold text-foreground mb-2">Proyectos Destacados</h2>
               <p className="text-muted-foreground mb-8">Descubre iniciativas agrícolas que están transformando el campo colombiano</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Proyecto 1 */}
-                <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="h-48 bg-[url('/images/cafe.png')] bg-cover bg-center" />
-                  <div className="p-6">
-                    <div className="flex items-center mb-4">
-                      <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">Café</span>
-                      <span className="ml-2 text-sm text-muted-foreground">Huila</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">Café Especial Alto de los Andes</h3>
-                    <p className="text-muted-foreground mb-4">Producción de café especial a 1,800 msnm por la cooperativa de caficultores del Alto Huila.</p>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Meta de inversión</p>
-                        <p className="text-lg font-bold text-foreground">15 ETH</p>
-                      </div>
-                      <Link 
-                        href="/proyectos/1"
-                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
-                      >
-                        Ver detalles
-                      </Link>
-                    </div>
-                  </div>
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-colombia-green mx-auto"></div>
+                  <p className="mt-4 text-muted-foreground">Cargando proyectos...</p>
                 </div>
-
-                {/* Proyecto 2 */}
-                <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="h-48 bg-[url('/images/aguacate.png')] bg-cover bg-center" />
-                  <div className="p-6">
-                    <div className="flex items-center mb-4">
-                      <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">Aguacate</span>
-                      <span className="ml-2 text-sm text-muted-foreground">Antioquia</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">Aguacate Hass Premium</h3>
-                    <p className="text-muted-foreground mb-4">Cultivo tecnificado de aguacate Hass para exportación por la asociación de agricultores de Urrao.</p>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Meta de inversión</p>
-                        <p className="text-lg font-bold text-foreground">20 ETH</p>
-                      </div>
-                      <Link 
-                        href="/proyectos/2"
-                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
-                      >
-                        Ver detalles
-                      </Link>
-                    </div>
-                  </div>
+              ) : error ? (
+                <div className="text-center py-12">
+                  <p className="text-red-500">Error al cargar los proyectos. Por favor, intenta de nuevo más tarde.</p>
                 </div>
-
-                {/* Proyecto 3 */}
-                <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="h-48 bg-[url('/images/cacao.png')] bg-cover bg-center" />
-                  <div className="p-6">
-                    <div className="flex items-center mb-4">
-                      <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">Cacao</span>
-                      <span className="ml-2 text-sm text-muted-foreground">Santander</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">Cacao Orgánico del Magdalena</h3>
-                    <p className="text-muted-foreground mb-4">Producción de cacao fino de aroma certificado orgánico por familias cacaoteras de San Vicente.</p>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Meta de inversión</p>
-                        <p className="text-lg font-bold text-foreground">12 ETH</p>
-                      </div>
-                      <Link 
-                        href="/proyectos/3"
-                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
-                      >
-                        Ver detalles
-                      </Link>
-                    </div>
-                  </div>
+              ) : featuredProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No hay proyectos disponibles en este momento.</p>
                 </div>
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {featuredProjects.map((project) => (
+                    <div key={project.id} className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                      <div 
+                        className="h-48 bg-cover bg-center" 
+                        style={{ backgroundImage: `url(${project.imageUrl})` }}
+                      />
+                      <div className="p-6">
+                        <div className="flex items-center mb-4">
+                          <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">
+                            Agricultura
+                          </span>
+                          <span className="ml-2 text-sm text-muted-foreground">{project.location}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground mb-2">{project.title}</h3>
+                        <p className="text-muted-foreground mb-4">{project.description}</p>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Meta de inversión</p>
+                            <p className="text-lg font-bold text-foreground">
+                              {formatEther(project.targetAmount)} ETH
+                            </p>
+                          </div>
+                          <Link 
+                            href={`/proyectos/${project.id}`}
+                            className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                          >
+                            Ver detalles
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="text-center mt-12">
                 <Link 
