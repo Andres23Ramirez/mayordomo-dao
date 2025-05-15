@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Navbar from './components/Navbar';
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
@@ -13,25 +14,26 @@ export default function Home() {
       <main className="flex-grow">
         <div className="flex flex-col min-h-screen">
           {/* Hero Section */}
-          <section className="bg-colombia-green px-4 py-16 md:py-24 patron-ruana">
-            <div className="container mx-auto max-w-6xl">
-              <div className="flex flex-col items-center text-center">
-                <span className="inline-flex items-center rounded-full bg-colombia-yellow px-3 py-1 text-sm font-medium text-colombia-green mb-6">
-                  Apoyando a los agricultores colombianos ��
-                </span>
-                <h1 className="text-4xl md:text-6xl font-bold text-background mb-6">
-                  Invierte en el Futuro de la<br />Agricultura Colombiana
+          <section className="relative h-[calc(100vh-4rem)] flex items-center">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center">
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+            
+            <div className="container mx-auto px-4 relative">
+              <div className="max-w-3xl">
+                <h1 className="text-6xl font-bold text-background mb-6">
+                  Invierte en el Futuro del Campo Colombiano
                 </h1>
-                <p className="text-xl text-background max-w-2xl mb-8">
-                  Conectamos agricultores con inversionistas para crear un futuro más sostenible.
-                  Únete a nuestra comunidad y sé parte del cambio en el campo colombiano.
+                <p className="text-xl text-background/90 mb-8">
+                  Conectamos inversores con proyectos agrícolas sostenibles. 
+                  Apoya directamente a los agricultores y participa en el crecimiento del sector rural.
                 </p>
-                <button
-                  onClick={() => router.push('/proyectos')}
-                  className="bg-colombia-yellow text-colombia-green font-semibold px-8 py-3 rounded-lg hover:bg-background hover:text-colombia-green transition-all duration-300"
+                <Link 
+                  href="/proyectos" 
+                  className="bg-colombia-green text-background px-8 py-4 rounded-lg text-lg font-medium hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
                 >
-                  Explorar Proyectos
-                </button>
+                  Ver todos los proyectos
+                </Link>
               </div>
             </div>
           </section>
@@ -58,9 +60,12 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground">Meta de inversión</p>
                         <p className="text-lg font-bold text-foreground">15 ETH</p>
                       </div>
-                      <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                      <Link 
+                        href="/proyectos/1"
+                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                      >
                         Ver detalles
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -80,9 +85,12 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground">Meta de inversión</p>
                         <p className="text-lg font-bold text-foreground">20 ETH</p>
                       </div>
-                      <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                      <Link 
+                        href="/proyectos/2"
+                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                      >
                         Ver detalles
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -102,21 +110,27 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground">Meta de inversión</p>
                         <p className="text-lg font-bold text-foreground">12 ETH</p>
                       </div>
-                      <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                      <Link 
+                        href="/proyectos/3"
+                        className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                      >
                         Ver detalles
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="text-center mt-12">
-                <button className="bg-colombia-green text-background font-semibold px-8 py-3 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-all duration-300 inline-flex items-center">
+                <Link 
+                  href="/proyectos"
+                  className="bg-colombia-green text-background font-semibold px-8 py-3 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-all duration-300 inline-flex items-center"
+                >
                   Ver todos los proyectos
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                   </svg>
-                </button>
+                </Link>
               </div>
             </div>
           </section>
