@@ -110,6 +110,19 @@ export const CONTRACTS = {
         type: "function",
       },
       {
+        inputs: [],
+        name: "projectCounter",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
         anonymous: false,
         inputs: [
           {
