@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useFarmingProjects } from '../hooks/useFarmingProjects';
 import Navbar from "../components/Navbar";
+import Link from 'next/link';
 
 export default function ProjectsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -61,9 +62,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">15 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/1" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -83,9 +84,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">20 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/2" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -105,9 +106,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">12 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/3" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -127,9 +128,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">18 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/4" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -149,9 +150,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">25 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/5" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -171,9 +172,9 @@ export default function ProjectsPage() {
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-lg font-bold text-foreground">30 ETH</p>
                   </div>
-                  <button className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
+                  <Link href="/proyectos/6" className="bg-colombia-green text-background px-4 py-2 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors">
                     Ver detalles
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
