@@ -1,10 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import {
-  useReadContract,
-  useWriteContract,
-  useWatchContractEvent,
-  usePublicClient,
-} from "wagmi";
+import { useWriteContract, usePublicClient } from "wagmi";
 import { CONTRACTS } from "../config/contracts";
 
 export type ProjectDetails = {
@@ -40,16 +35,10 @@ export function useFarmingProjects(): FarmingProjectsHook {
   const [error, setError] = useState<string | null>(null);
   const [projectDetails, setProjectDetails] = useState<ProjectDetails[]>([]);
   const publicClient = usePublicClient();
-
   const { writeContractAsync } = useWriteContract();
-  const { data: totalProjects } = useReadContract({
-    address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
-    abi: CONTRACTS.FARMING_PROJECTS.ABI,
-    functionName: "projectCounter",
-  });
 
   const fetchProjectDetails = useCallback(
-    async (projectId: number) => {
+    async (projectId: number): Promise<ProjectDetails | null> => {
       if (!publicClient) return null;
 
       try {
@@ -60,56 +49,80 @@ export function useFarmingProjects(): FarmingProjectsHook {
           args: [BigInt(projectId)],
         });
 
-        if (result) {
-          const [
-            owner,
-            title,
-            description,
-            location,
-            imageUrl,
-            targetAmount,
-            currentAmount,
-            isActive,
-          ] = result;
-          return {
-            owner,
-            title,
-            description,
-            location,
-            imageUrl,
-            targetAmount,
-            currentAmount,
-            isActive,
-          };
-        }
+        if (!result) return null;
+
+        const [
+          owner,
+          title,
+          description,
+          location,
+          imageUrl,
+          targetAmount,
+          currentAmount,
+          isActive,
+        ] = result as [
+          string,
+          string,
+          string,
+          string,
+          string,
+          bigint,
+          bigint,
+          boolean
+        ];
+
+        return {
+          owner,
+          title,
+          description,
+          location,
+          imageUrl,
+          targetAmount,
+          currentAmount,
+          isActive,
+        };
       } catch (err) {
         console.error(`Error fetching project ${projectId}:`, err);
+        return null;
       }
-      return null;
     },
     [publicClient]
   );
 
   const fetchAllProjects = useCallback(async () => {
-    if (!totalProjects) return;
+    if (!publicClient) return;
 
     setLoading(true);
+    setError(null);
+
     try {
-      const count = Number(totalProjects);
+      const counter = (await publicClient.readContract({
+        address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
+        abi: CONTRACTS.FARMING_PROJECTS.ABI,
+        functionName: "projectCounter",
+      })) as bigint;
+
+      const count = Number(counter);
       const projects = await Promise.all(
         Array.from({ length: count }, (_, i) => fetchProjectDetails(i + 1))
       );
-      setProjectDetails(projects.filter((p) => p !== null) as ProjectDetails[]);
+
+      setProjectDetails(
+        projects.filter((p): p is ProjectDetails => p !== null)
+      );
     } catch (err) {
+      console.error("Error fetching projects:", err);
       setError(err instanceof Error ? err.message : "Error fetching projects");
     } finally {
       setLoading(false);
     }
-  }, [totalProjects, fetchProjectDetails]);
+  }, [publicClient, fetchProjectDetails]);
 
   useEffect(() => {
-    fetchAllProjects();
-  }, [fetchAllProjects]);
+    if (publicClient) {
+      fetchAllProjects();
+    }
+  }, [publicClient]);
 
   const createNewProject = useCallback(
     async (
@@ -119,8 +132,6 @@ export function useFarmingProjects(): FarmingProjectsHook {
       imageUrl: string,
       targetAmount: bigint
     ): Promise<string | null> => {
-      setLoading(true);
-      setError(null);
       try {
         const result = await writeContractAsync({
           address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
@@ -128,13 +139,15 @@ export function useFarmingProjects(): FarmingProjectsHook {
           functionName: "createProject",
           args: [title, description, location, imageUrl, targetAmount],
         });
-        await fetchAllProjects(); // Refresh the projects list after creating a new one
+
+        // Esperar un poco y actualizar
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await fetchAllProjects();
+
         return result;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error creating project");
         return null;
-      } finally {
-        setLoading(false);
       }
     },
     [writeContractAsync, fetchAllProjects]
@@ -142,8 +155,6 @@ export function useFarmingProjects(): FarmingProjectsHook {
 
   const investInProjectFn = useCallback(
     async (projectId: number, amount: bigint): Promise<string | null> => {
-      setLoading(true);
-      setError(null);
       try {
         const result = await writeContractAsync({
           address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
@@ -152,28 +163,21 @@ export function useFarmingProjects(): FarmingProjectsHook {
           args: [BigInt(projectId)],
           value: amount,
         });
-        await fetchAllProjects(); // Refresh the projects list after investing
+
+        // Esperar un poco y actualizar
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await fetchAllProjects();
+
         return result;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Error investing in project"
         );
         return null;
-      } finally {
-        setLoading(false);
       }
     },
     [writeContractAsync, fetchAllProjects]
   );
-
-  useWatchContractEvent({
-    address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
-    abi: CONTRACTS.FARMING_PROJECTS.ABI,
-    eventName: "ProjectCreated",
-    onLogs() {
-      fetchAllProjects();
-    },
-  });
 
   return {
     loading,

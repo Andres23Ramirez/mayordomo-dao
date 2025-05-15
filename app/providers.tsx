@@ -12,8 +12,9 @@ import {
   trustWallet,
   ledgerWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { WagmiProvider, createConfig, http } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { WagmiProvider, createConfig } from 'wagmi';
+import { baseSepolia, hardhat } from 'wagmi/chains';
+import { http } from 'viem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -41,14 +42,6 @@ const connectors = connectorsForWallets([
   projectId,
 });
 
-const wagmiConfig = createConfig({
-  chains: [sepolia],
-  transports: {
-    [sepolia.id]: http(),
-  },
-  connectors,
-});
-
 const queryClient = new QueryClient();
 
 // Personalización del tema de RainbowKit
@@ -58,6 +51,15 @@ const customTheme = lightTheme({
   borderRadius: 'medium',
   fontStack: 'system',
   overlayBlur: 'small',
+});
+
+const config = createConfig({
+  chains: [hardhat, baseSepolia],
+  transports: {
+    [hardhat.id]: http(),
+    [baseSepolia.id]: http(),
+  },
+  connectors,
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -72,7 +74,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <WagmiProvider config={wagmiConfig}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={customTheme}>
           {children}

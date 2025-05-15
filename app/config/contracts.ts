@@ -1,8 +1,76 @@
 export const CONTRACTS = {
   FARMING_PROJECTS: {
-    // Aquí deberás reemplazar esta dirección con la dirección real de tu contrato una vez desplegado
-    ADDRESS: "0x..." as `0x${string}`,
+    ADDRESS: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853" as const,
     ABI: [
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            indexed: false,
+            internalType: "string",
+            name: "title",
+            type: "string",
+          },
+          {
+            indexed: false,
+            internalType: "uint256",
+            name: "targetAmount",
+            type: "uint256",
+          },
+        ],
+        name: "ProjectCreated",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+        ],
+        name: "ProjectDeleted",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "investor",
+            type: "address",
+          },
+          {
+            indexed: false,
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+        ],
+        name: "InvestmentMade",
+        type: "event",
+      },
       {
         inputs: [
           {
@@ -32,13 +100,7 @@ export const CONTRACTS = {
           },
         ],
         name: "createProject",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
       },
@@ -50,9 +112,9 @@ export const CONTRACTS = {
             type: "uint256",
           },
         ],
-        name: "investInProject",
+        name: "deleteProject",
         outputs: [],
-        stateMutability: "payable",
+        stateMutability: "nonpayable",
         type: "function",
       },
       {
@@ -110,6 +172,19 @@ export const CONTRACTS = {
         type: "function",
       },
       {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_projectId",
+            type: "uint256",
+          },
+        ],
+        name: "investInProject",
+        outputs: [],
+        stateMutability: "payable",
+        type: "function",
+      },
+      {
         inputs: [],
         name: "projectCounter",
         outputs: [
@@ -121,62 +196,6 @@ export const CONTRACTS = {
         ],
         stateMutability: "view",
         type: "function",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "uint256",
-            name: "projectId",
-            type: "uint256",
-          },
-          {
-            indexed: true,
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "string",
-            name: "title",
-            type: "string",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "targetAmount",
-            type: "uint256",
-          },
-        ],
-        name: "ProjectCreated",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "uint256",
-            name: "projectId",
-            type: "uint256",
-          },
-          {
-            indexed: true,
-            internalType: "address",
-            name: "investor",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "amount",
-            type: "uint256",
-          },
-        ],
-        name: "InvestmentMade",
-        type: "event",
       },
     ] as const,
   },

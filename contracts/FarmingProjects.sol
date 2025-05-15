@@ -15,8 +15,13 @@ contract FarmingProjects {
         mapping(address => uint256) investments;
     }
 
-    uint256 private projectCounter;
+    uint256 public projectCounter;
     mapping(uint256 => Project) public projects;
+
+    // Add getter for projectCounter with explicit return value
+    function getProjectCounter() public view returns (uint256 counter) {
+        counter = projectCounter;
+    }
 
     event ProjectCreated(
         uint256 indexed projectId,
@@ -24,6 +29,8 @@ contract FarmingProjects {
         string title,
         uint256 targetAmount
     );
+
+    event ProjectDeleted(uint256 indexed projectId);
 
     event InvestmentMade(
         uint256 indexed projectId,
@@ -52,6 +59,7 @@ contract FarmingProjects {
         string memory _imageUrl,
         uint256 _targetAmount
     ) external returns (uint256) {
+        require(bytes(_title).length > 0, "Title cannot be empty");
         require(_targetAmount > 0, "Target amount must be greater than 0");
 
         projectCounter++;
@@ -70,6 +78,25 @@ contract FarmingProjects {
         emit ProjectCreated(projectCounter, msg.sender, _title, _targetAmount);
 
         return projectCounter;
+    }
+
+    function deleteProject(uint256 _projectId) external {
+        require(
+            _projectId > 0 && _projectId <= projectCounter,
+            "Invalid project ID"
+        );
+        require(
+            projects[_projectId].owner == msg.sender,
+            "Only owner can delete project"
+        );
+        require(projects[_projectId].isActive, "Project is already inactive");
+        require(
+            projects[_projectId].currentAmount == 0,
+            "Cannot delete project with investments"
+        );
+
+        projects[_projectId].isActive = false;
+        emit ProjectDeleted(_projectId);
     }
 
     function investInProject(uint256 _projectId) external payable {
