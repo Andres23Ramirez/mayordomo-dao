@@ -1,26 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useFarmingProjects } from '../hooks/useFarmingProjects';
 import Navbar from "../components/Navbar";
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function ProjectsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { address } = useAccount();
   const { loading, error, projectDetails, createNewProject, investInProjectFn } = useFarmingProjects();
+  const searchParams = useSearchParams();
 
-  const handleCreateProject = async (
-    title: string,
-    description: string,
-    location: string,
-    imageUrl: string,
-    targetAmount: bigint
-  ) => {
-    const tx = await createNewProject(title, description, location, imageUrl, targetAmount);
-    if (tx) {
+  useEffect(() => {
+    if (searchParams.get('create') === 'true' && address) {
+      setShowCreateForm(true);
+    }
+  }, [searchParams, address]);
+
+  const handleCreateProject = async (formData: FormData) => {
+    try {
+      const title = formData.get('title') as string;
+      const description = formData.get('description') as string;
+      const location = formData.get('location') as string;
+      const imageUrl = formData.get('imageUrl') as string;
+      const targetAmount = BigInt(formData.get('targetAmount') as string);
+
+      await createNewProject(title, description, location, imageUrl, targetAmount);
       setShowCreateForm(false);
+      // Aquí podrías agregar una notificación de éxito
+    } catch (error) {
+      console.error('Error al crear el proyecto:', error);
+      // Aquí podrías agregar una notificación de error
     }
   };
 
@@ -35,13 +47,120 @@ export default function ProjectsPage() {
       {/* Projects Header */}
       <section className="bg-colombia-green px-4 py-16">
         <div className="container mx-auto">
-          <h1 className="text-5xl font-bold text-background mb-4">Proyectos Agrícolas</h1>
-          <p className="text-background/90 text-xl max-w-2xl">
-            Descubre y apoya iniciativas agrícolas que están transformando el campo colombiano. 
-            Cada proyecto representa una oportunidad única de inversión y desarrollo rural.
-          </p>
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-5xl font-bold text-background mb-4">Proyectos Agrícolas</h1>
+              <p className="text-background/90 text-xl max-w-2xl">
+                Descubre y apoya iniciativas agrícolas que están transformando el campo colombiano. 
+                Cada proyecto representa una oportunidad única de inversión y desarrollo rural.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Create Project Modal */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-background rounded-xl p-8 max-w-2xl w-full">
+            <h2 className="text-2xl font-bold text-foreground mb-6">Crear Nuevo Proyecto</h2>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateProject(new FormData(e.currentTarget));
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
+                    Título del Proyecto
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="Ej: Café Especial Alto de los Andes"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
+                    Descripción
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    required
+                    rows={4}
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="Describe tu proyecto agrícola..."
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="location" className="block text-sm font-medium text-foreground mb-1">
+                    Ubicación
+                  </label>
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="Ej: Huila"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="imageUrl" className="block text-sm font-medium text-foreground mb-1">
+                    URL de la Imagen
+                  </label>
+                  <input
+                    type="url"
+                    id="imageUrl"
+                    name="imageUrl"
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="targetAmount" className="block text-sm font-medium text-foreground mb-1">
+                    Meta de Inversión (ETH)
+                  </label>
+                  <input
+                    type="number"
+                    id="targetAmount"
+                    name="targetAmount"
+                    required
+                    min="0"
+                    step="0.01"
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="15"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-2 rounded-lg border border-border text-foreground hover:bg-card transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 rounded-lg bg-colombia-green text-background hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                >
+                  Crear Proyecto
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Projects Grid */}
       <section className="bg-background px-4 py-16">

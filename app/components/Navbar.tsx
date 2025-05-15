@@ -91,7 +91,12 @@ export default function Navbar() {
                 {userInitials}
               </div>
             ) : (
-              <ConnectButton />
+              <div className="flex items-center gap-4">
+                <span className="text-background text-base">
+                  Conecta tu wallet para crear un proyecto
+                </span>
+                <ConnectButton />
+              </div>
             )}
           </div>
         </div>
@@ -129,7 +134,18 @@ export default function Navbar() {
                 Contacto
               </Link>
               <div className="pt-4">
-                <ConnectButton />
+                {address ? (
+                  <div className="bg-colombia-yellow text-colombia-green w-8 h-8 rounded-full flex items-center justify-center font-semibold">
+                    {userInitials}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <span className="text-background text-base">
+                      Conecta tu wallet para crear un proyecto
+                    </span>
+                    <ConnectButton />
+                  </div>
+                )}
               </div>
             </div>
           </div>

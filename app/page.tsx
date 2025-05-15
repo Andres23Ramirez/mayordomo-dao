@@ -3,9 +3,11 @@
 import { useRouter } from 'next/navigation';
 import Navbar from './components/Navbar';
 import Link from 'next/link';
+import { useAccount } from 'wagmi';
 
 export default function Home() {
   const router = useRouter();
+  const { address } = useAccount();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,12 +30,28 @@ export default function Home() {
                   Conectamos inversores con proyectos agrícolas sostenibles. 
                   Apoya directamente a los agricultores y participa en el crecimiento del sector rural.
                 </p>
-                <Link 
-                  href="/proyectos" 
-                  className="bg-colombia-green text-background px-8 py-4 rounded-lg text-lg font-medium hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
-                >
-                  Ver todos los proyectos
-                </Link>
+                <div className="flex gap-4 items-center">
+                  <Link 
+                    href="/proyectos" 
+                    className="bg-colombia-green text-background px-8 py-4 rounded-lg text-lg font-medium hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
+                  >
+                    Ver todos los proyectos
+                  </Link>
+                  <div className="relative">
+                    {address ? (
+                      <Link 
+                        href="/proyectos?create=true" 
+                        className="bg-colombia-yellow text-colombia-green px-8 py-4 rounded-lg text-lg font-medium hover:bg-background transition-colors"
+                      >
+                        Crear Proyecto
+                      </Link>
+                    ) : (
+                      <span className="bg-background text-colombia-green px-8 py-4 rounded-lg text-lg font-medium">
+                        Conecta tu wallet para crear un proyecto
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </section>
