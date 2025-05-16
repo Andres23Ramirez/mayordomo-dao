@@ -53,11 +53,14 @@ const customTheme = lightTheme({
   overlayBlur: 'small',
 });
 
+// Determinar si estamos en producción
+const isProduction = process.env.NEXT_PUBLIC_NODE_ENV === 'production';
+
 const config = createConfig({
-  chains: [hardhat, baseSepolia],
+  chains: [isProduction ? baseSepolia : hardhat],
   transports: {
+    [baseSepolia.id]: http('https://sepolia.base.org'),
     [hardhat.id]: http(),
-    [baseSepolia.id]: http(),
   },
   connectors,
 });
