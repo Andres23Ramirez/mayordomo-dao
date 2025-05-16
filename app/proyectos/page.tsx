@@ -75,6 +75,14 @@ export default function ProjectsPage() {
                 Cada proyecto representa una oportunidad única de inversión y desarrollo rural.
               </p>
             </div>
+            {address && (
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="bg-colombia-yellow text-colombia-green px-6 py-3 rounded-lg hover:bg-background hover:text-colombia-green transition-colors font-semibold"
+              >
+                Crear Proyecto
+              </button>
+            )}
           </div>
         </div>
       </section>
