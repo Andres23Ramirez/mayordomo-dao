@@ -7,19 +7,21 @@ import Navbar from "../components/Navbar";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { formatEther, parseEther } from 'viem';
+import ProjectMap from '../components/ProjectMap';
 
 export default function ProjectsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const { address } = useAccount();
+  const [address, setAddress] = useState('');
+  const { address: walletAddress } = useAccount();
   const { loading, error, projectDetails, createNewProject, investInProjectFn } = useFarmingProjects();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get('create') === 'true' && address) {
+    if (searchParams.get('create') === 'true' && walletAddress) {
       setShowCreateForm(true);
     }
-  }, [searchParams, address]);
+  }, [searchParams, walletAddress]);
 
   const handleCreateProject = async (formData: FormData) => {
     try {
@@ -75,7 +77,7 @@ export default function ProjectsPage() {
                 Cada proyecto representa una oportunidad única de inversión y desarrollo rural.
               </p>
             </div>
-            {address && (
+            {walletAddress && (
               <button
                 onClick={() => setShowCreateForm(true)}
                 className="bg-colombia-yellow text-colombia-green px-6 py-3 rounded-lg hover:bg-background hover:text-colombia-green transition-colors font-semibold"
@@ -132,7 +134,7 @@ export default function ProjectsPage() {
 
                 <div>
                   <label htmlFor="location" className="block text-sm font-medium text-foreground mb-1">
-                    Ubicación
+                    Departamento
                   </label>
                   <input
                     type="text"
@@ -142,6 +144,33 @@ export default function ProjectsPage() {
                     className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
                     placeholder="Ej: Huila"
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium text-foreground mb-1">
+                    Dirección Específica
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
+                    placeholder="Ej: Vereda El Progreso, Municipio de Pitalito"
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Ubicación en el Mapa
+                  </label>
+                  <div className="rounded-lg overflow-hidden">
+                    <ProjectMap location={address} />
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    La ubicación se actualizará automáticamente al escribir la dirección
+                  </p>
                 </div>
 
                 <div>
@@ -222,7 +251,7 @@ export default function ProjectsPage() {
           ) : projectDetails.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg">No hay proyectos disponibles aún.</p>
-              {address && (
+              {walletAddress && (
                 <button
                   onClick={() => setShowCreateForm(true)}
                   className="mt-4 bg-colombia-green text-background px-6 py-3 rounded-lg hover:bg-colombia-yellow hover:text-colombia-green transition-colors"
