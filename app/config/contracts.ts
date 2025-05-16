@@ -1,8 +1,7 @@
 export const CONTRACTS = {
   FARMING_PROJECTS: {
-    ADDRESS:
-      process.env.NEXT_PUBLIC_FARMING_PROJECTS_ADDRESS ||
-      "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f",
+    ADDRESS: (process.env.NEXT_PUBLIC_FARMING_PROJECTS_ADDRESS ||
+      "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f") as `0x${string}`,
     ABI: [
       {
         anonymous: false,

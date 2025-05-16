@@ -147,7 +147,7 @@ export function useFarmingProjects(): FarmingProjectsHook {
     if (publicClient) {
       fetchAllProjects();
     }
-  }, [publicClient]);
+  }, [publicClient, fetchAllProjects]);
 
   const createNewProject = useCallback(
     async (
