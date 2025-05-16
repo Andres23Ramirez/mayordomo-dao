@@ -6,10 +6,11 @@ import { useFarmingProjects } from '../hooks/useFarmingProjects';
 import Navbar from "../components/Navbar";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { formatEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
 
 export default function ProjectsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const { address } = useAccount();
   const { loading, error, projectDetails, createNewProject, investInProjectFn } = useFarmingProjects();
   const searchParams = useSearchParams();
@@ -22,18 +23,36 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async (formData: FormData) => {
     try {
+      setFormError(null);
       const title = formData.get('title') as string;
       const description = formData.get('description') as string;
       const location = formData.get('location') as string;
       const imageUrl = formData.get('imageUrl') as string;
-      const targetAmount = BigInt(formData.get('targetAmount') as string);
+      const targetAmountEth = formData.get('targetAmount') as string;
 
-      await createNewProject(title, description, location, imageUrl, targetAmount);
+      // Validar que el monto sea un número válido y mayor que 0
+      const amount = parseFloat(targetAmountEth);
+      if (isNaN(amount) || amount <= 0) {
+        setFormError('El monto debe ser un número válido mayor que 0');
+        return;
+      }
+
+      // Validar que el monto tenga máximo 18 decimales
+      const decimals = targetAmountEth.includes('.') ? targetAmountEth.split('.')[1].length : 0;
+      if (decimals > 18) {
+        setFormError('El monto no puede tener más de 18 decimales');
+        return;
+      }
+
+      console.log("Monto en ETH:", targetAmountEth);
+      const amountInWei = parseEther(targetAmountEth);
+      console.log("Monto en Wei:", amountInWei.toString());
+
+      await createNewProject(title, description, location, imageUrl, amountInWei.toString());
       setShowCreateForm(false);
-      // Aquí podrías agregar una notificación de éxito
     } catch (error) {
       console.error('Error al crear el proyecto:', error);
-      // Aquí podrías agregar una notificación de error
+      setFormError(error instanceof Error ? error.message : 'Error al crear el proyecto');
     }
   };
 
@@ -69,6 +88,11 @@ export default function ProjectsPage() {
               e.preventDefault();
               handleCreateProject(new FormData(e.currentTarget));
             }}>
+              {formError && (
+                <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {formError}
+                </div>
+              )}
               <div className="space-y-4">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
@@ -131,15 +155,28 @@ export default function ProjectsPage() {
                     Meta de Inversión (ETH)
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="^\d*\.?\d*$"
                     id="targetAmount"
                     name="targetAmount"
                     required
                     min="0"
-                    step="0.01"
+                    step="any"
                     className="w-full px-4 py-2 rounded-lg border border-border bg-card text-foreground"
-                    placeholder="15"
+                    placeholder="Ej: 3.5"
+                    onChange={(e) => {
+                      // Solo permitir números y un punto decimal
+                      const value = e.target.value.replace(/[^0-9.]/g, '');
+                      // Evitar múltiples puntos decimales
+                      if (value === '.' || (value.match(/\./g) || []).length <= 1) {
+                        e.target.value = value;
+                      }
+                    }}
                   />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Ingresa el monto en ETH (ejemplo: 3.5)
+                  </p>
                 </div>
               </div>
 

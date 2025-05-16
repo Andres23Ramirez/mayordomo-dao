@@ -153,20 +153,20 @@ export default function ProjectPage() {
                   <div>
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
                     <p className="text-3xl font-bold text-foreground">
-                      {formatEther(project.targetAmount)} ETH
+                      {parseFloat(formatEther(project.targetAmount))} ETH
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Inversión actual</p>
                     <p className="text-xl font-bold text-foreground">
-                      {formatEther(project.currentAmount)} ETH
+                      {parseFloat(formatEther(project.currentAmount))} ETH
                     </p>
                     <div className="w-full bg-muted rounded-full h-2 mt-2">
                       <div
                         className="bg-colombia-green h-2 rounded-full"
                         style={{
                           width: `${Math.min(
-                            (Number(project.currentAmount) / Number(project.targetAmount)) * 100,
+                            (Number(formatEther(project.currentAmount)) / Number(formatEther(project.targetAmount))) * 100,
                             100
                           )}%`
                         }}
@@ -179,7 +179,7 @@ export default function ProjectPage() {
                         Monto a invertir
                       </label>
                       <span className="text-sm font-medium text-foreground">
-                        {investmentAmount || '0.00'} ETH
+                        {parseFloat(investmentAmount)} ETH
                       </span>
                     </div>
                     <div className="relative h-6">
@@ -224,7 +224,7 @@ export default function ProjectPage() {
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground mt-3">
                       <span>0 ETH</span>
-                      <span>{formatEther(remainingAmount)} ETH</span>
+                      <span>{parseFloat(formatEther(remainingAmount))} ETH</span>
                     </div>
                   </div>
                 </div>

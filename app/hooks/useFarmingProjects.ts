@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useWriteContract, usePublicClient } from "wagmi";
 import { CONTRACTS } from "../config/contracts";
+import { parseEther } from "viem";
 
 export type ProjectDetails = {
   id: number;
@@ -23,7 +24,7 @@ interface FarmingProjectsHook {
     description: string,
     location: string,
     imageUrl: string,
-    targetAmount: bigint
+    targetAmount: string
   ) => Promise<string | null>;
   investInProjectFn: (
     projectId: number,
@@ -132,14 +133,17 @@ export function useFarmingProjects(): FarmingProjectsHook {
       description: string,
       location: string,
       imageUrl: string,
-      targetAmount: bigint
+      targetAmount: string
     ): Promise<string | null> => {
       try {
+        // El targetAmount ya viene en Wei
+        console.log("Recibiendo monto en Wei:", targetAmount);
+
         const result = await writeContractAsync({
           address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
           abi: CONTRACTS.FARMING_PROJECTS.ABI,
           functionName: "createProject",
-          args: [title, description, location, imageUrl, targetAmount],
+          args: [title, description, location, imageUrl, BigInt(targetAmount)],
         });
 
         // Esperar un poco y actualizar
@@ -148,6 +152,7 @@ export function useFarmingProjects(): FarmingProjectsHook {
 
         return result;
       } catch (err) {
+        console.error("Error creating project:", err);
         setError(err instanceof Error ? err.message : "Error creating project");
         return null;
       }
