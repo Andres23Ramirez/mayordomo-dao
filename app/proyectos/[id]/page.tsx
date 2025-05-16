@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import Navbar from "../../components/Navbar";
 import { useFarmingProjects } from '../../hooks/useFarmingProjects';
 import { formatEther, parseEther } from 'viem';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ProjectPage() {
   const params = useParams();
@@ -16,9 +16,14 @@ export default function ProjectPage() {
   const project = projectDetails.find(p => p.id === projectId);
   
   // Inicializar el monto de inversión con el monto objetivo
-  const [investmentAmount, setInvestmentAmount] = useState(
-    project ? formatEther(project.targetAmount) : ''
-  );
+  const [investmentAmount, setInvestmentAmount] = useState('');
+
+  // Actualizar el monto de inversión cuando el proyecto se carga
+  useEffect(() => {
+    if (project) {
+      setInvestmentAmount(formatEther(project.targetAmount));
+    }
+  }, [project]);
 
   if (loading) {
     return (
@@ -64,9 +69,16 @@ export default function ProjectPage() {
         alert('Inversión realizada con éxito');
         setInvestmentAmount('');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al invertir:', error);
-      alert('Error al realizar la inversión');
+      // Manejar específicamente el caso de rechazo de transacción
+      if (error.message.includes('User denied transaction') || 
+          error.message.includes('User rejected') ||
+          error.message.includes('rejected the request')) {
+        alert('Transacción cancelada por el usuario');
+      } else {
+        alert('Error al realizar la inversión. Por favor intenta de nuevo.');
+      }
     } finally {
       setInvesting(false);
     }
