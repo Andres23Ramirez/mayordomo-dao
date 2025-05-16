@@ -7,7 +7,10 @@ contract FarmingProjects {
         address owner;
         string title;
         string description;
-        string location;
+        string specificAddress; // Dirección específica (ej: Vereda El Progreso)
+        string city; // Ciudad (ej: Pitalito)
+        string department; // Departamento (ej: Huila)
+        string country; // País (ej: Colombia)
         string imageUrl;
         uint256 targetAmount;
         uint256 currentAmount;
@@ -55,7 +58,10 @@ contract FarmingProjects {
     function createProject(
         string memory _title,
         string memory _description,
-        string memory _location,
+        string memory _specificAddress,
+        string memory _city,
+        string memory _department,
+        string memory _country,
         string memory _imageUrl,
         uint256 _targetAmount
     ) external returns (uint256) {
@@ -69,7 +75,10 @@ contract FarmingProjects {
         newProject.owner = msg.sender;
         newProject.title = _title;
         newProject.description = _description;
-        newProject.location = _location;
+        newProject.specificAddress = _specificAddress;
+        newProject.city = _city;
+        newProject.department = _department;
+        newProject.country = _country;
         newProject.imageUrl = _imageUrl;
         newProject.targetAmount = _targetAmount;
         newProject.currentAmount = 0;
@@ -148,7 +157,10 @@ contract FarmingProjects {
             address owner,
             string memory title,
             string memory description,
-            string memory location,
+            string memory specificAddress,
+            string memory city,
+            string memory department,
+            string memory country,
             string memory imageUrl,
             uint256 targetAmount,
             uint256 currentAmount,
@@ -160,7 +172,10 @@ contract FarmingProjects {
             project.owner,
             project.title,
             project.description,
-            project.location,
+            project.specificAddress,
+            project.city,
+            project.department,
+            project.country,
             project.imageUrl,
             project.targetAmount,
             project.currentAmount,

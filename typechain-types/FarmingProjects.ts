@@ -47,7 +47,16 @@ export interface FarmingProjectsInterface extends Interface {
 
   encodeFunctionData(
     functionFragment: "createProject",
-    values: [string, string, string, string, BigNumberish]
+    values: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "deleteProject",
@@ -241,7 +250,10 @@ export interface FarmingProjects extends BaseContract {
     [
       _title: string,
       _description: string,
-      _location: string,
+      _specificAddress: string,
+      _city: string,
+      _department: string,
+      _country: string,
       _imageUrl: string,
       _targetAmount: BigNumberish
     ],
@@ -266,11 +278,26 @@ export interface FarmingProjects extends BaseContract {
   getProjectDetails: TypedContractMethod<
     [_projectId: BigNumberish],
     [
-      [string, string, string, string, string, bigint, bigint, boolean] & {
+      [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        bigint,
+        bigint,
+        boolean
+      ] & {
         owner: string;
         title: string;
         description: string;
-        location: string;
+        specificAddress: string;
+        city: string;
+        department: string;
+        country: string;
         imageUrl: string;
         targetAmount: bigint;
         currentAmount: bigint;
@@ -298,6 +325,9 @@ export interface FarmingProjects extends BaseContract {
         string,
         string,
         string,
+        string,
+        string,
+        string,
         bigint,
         bigint,
         boolean
@@ -306,7 +336,10 @@ export interface FarmingProjects extends BaseContract {
         owner: string;
         title: string;
         description: string;
-        location: string;
+        specificAddress: string;
+        city: string;
+        department: string;
+        country: string;
         imageUrl: string;
         targetAmount: bigint;
         currentAmount: bigint;
@@ -332,7 +365,10 @@ export interface FarmingProjects extends BaseContract {
     [
       _title: string,
       _description: string,
-      _location: string,
+      _specificAddress: string,
+      _city: string,
+      _department: string,
+      _country: string,
       _imageUrl: string,
       _targetAmount: BigNumberish
     ],
@@ -357,11 +393,26 @@ export interface FarmingProjects extends BaseContract {
   ): TypedContractMethod<
     [_projectId: BigNumberish],
     [
-      [string, string, string, string, string, bigint, bigint, boolean] & {
+      [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        bigint,
+        bigint,
+        boolean
+      ] & {
         owner: string;
         title: string;
         description: string;
-        location: string;
+        specificAddress: string;
+        city: string;
+        department: string;
+        country: string;
         imageUrl: string;
         targetAmount: bigint;
         currentAmount: bigint;
@@ -388,6 +439,9 @@ export interface FarmingProjects extends BaseContract {
         string,
         string,
         string,
+        string,
+        string,
+        string,
         bigint,
         bigint,
         boolean
@@ -396,7 +450,10 @@ export interface FarmingProjects extends BaseContract {
         owner: string;
         title: string;
         description: string;
-        location: string;
+        specificAddress: string;
+        city: string;
+        department: string;
+        country: string;
         imageUrl: string;
         targetAmount: bigint;
         currentAmount: bigint;

@@ -8,7 +8,10 @@ export type ProjectDetails = {
   owner: string;
   title: string;
   description: string;
-  location: string;
+  specificAddress: string;
+  city: string;
+  department: string;
+  country: string;
   imageUrl: string;
   targetAmount: bigint;
   currentAmount: bigint;
@@ -22,7 +25,10 @@ interface FarmingProjectsHook {
   createNewProject: (
     title: string,
     description: string,
-    location: string,
+    specificAddress: string,
+    city: string,
+    department: string,
+    country: string,
     imageUrl: string,
     targetAmount: string
   ) => Promise<string | null>;
@@ -57,7 +63,10 @@ export function useFarmingProjects(): FarmingProjectsHook {
           owner,
           title,
           description,
-          location,
+          specificAddress,
+          city,
+          department,
+          country,
           imageUrl,
           targetAmount,
           currentAmount,
@@ -68,17 +77,30 @@ export function useFarmingProjects(): FarmingProjectsHook {
           string,
           string,
           string,
+          string,
+          string,
+          string,
           bigint,
           bigint,
           boolean
         ];
+
+        console.log(`Project ${projectId} location:`, {
+          specificAddress,
+          city,
+          department,
+          country,
+        });
 
         return {
           id: projectId,
           owner,
           title,
           description,
-          location,
+          specificAddress,
+          city,
+          department,
+          country,
           imageUrl,
           targetAmount,
           currentAmount,
@@ -131,19 +153,35 @@ export function useFarmingProjects(): FarmingProjectsHook {
     async (
       title: string,
       description: string,
-      location: string,
+      specificAddress: string,
+      city: string,
+      department: string,
+      country: string,
       imageUrl: string,
       targetAmount: string
     ): Promise<string | null> => {
       try {
-        // El targetAmount ya viene en Wei
-        console.log("Recibiendo monto en Wei:", targetAmount);
+        console.log("Creating project with location:", {
+          specificAddress,
+          city,
+          department,
+          country,
+        });
 
         const result = await writeContractAsync({
           address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
           abi: CONTRACTS.FARMING_PROJECTS.ABI,
           functionName: "createProject",
-          args: [title, description, location, imageUrl, BigInt(targetAmount)],
+          args: [
+            title,
+            description,
+            specificAddress,
+            city,
+            department,
+            country,
+            imageUrl,
+            BigInt(targetAmount),
+          ],
         });
 
         // Esperar un poco y actualizar

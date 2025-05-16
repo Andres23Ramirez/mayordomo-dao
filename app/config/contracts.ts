@@ -1,6 +1,6 @@
 export const CONTRACTS = {
   FARMING_PROJECTS: {
-    ADDRESS: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853" as const,
+    ADDRESS: "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f" as const,
     ABI: [
       {
         anonymous: false,
@@ -85,7 +85,22 @@ export const CONTRACTS = {
           },
           {
             internalType: "string",
-            name: "_location",
+            name: "_specificAddress",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "_city",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "_department",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "_country",
             type: "string",
           },
           {
@@ -100,7 +115,13 @@ export const CONTRACTS = {
           },
         ],
         name: "createProject",
-        outputs: [],
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
         stateMutability: "nonpayable",
         type: "function",
       },
@@ -144,7 +165,22 @@ export const CONTRACTS = {
           },
           {
             internalType: "string",
-            name: "location",
+            name: "specificAddress",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "city",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "department",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "country",
             type: "string",
           },
           {

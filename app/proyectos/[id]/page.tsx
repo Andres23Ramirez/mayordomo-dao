@@ -5,6 +5,7 @@ import Navbar from "../../components/Navbar";
 import { useFarmingProjects } from '../../hooks/useFarmingProjects';
 import { formatEther, parseEther } from 'viem';
 import { useState, useEffect } from 'react';
+import ProjectMap from '../../components/ProjectMap';
 
 export default function ProjectPage() {
   const params = useParams();
@@ -102,10 +103,10 @@ export default function ProjectPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-0 left-0 p-8">
               <div className="flex items-center mb-4">
-                <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full backdrop-blur-sm">
+                <span className="bg-colombia-green/20 text-background text-sm font-medium px-3 py-1 rounded-full backdrop-blur-sm">
                   Agricultura
                 </span>
-                <span className="ml-2 text-sm text-background/90">{project.location}</span>
+                <span className="ml-2 text-sm text-background/90">{`${project.city}, ${project.department}`}</span>
               </div>
               <h1 className="text-5xl font-bold text-background mb-2">{project.title}</h1>
             </div>
@@ -117,24 +118,47 @@ export default function ProjectPage() {
                 <h2 className="text-2xl font-bold text-foreground mb-4">Descripción del Proyecto</h2>
                 <p className="text-muted-foreground text-lg">{project.description}</p>
 
-                <div className="mt-8">
-                  <h3 className="text-xl font-bold text-foreground mb-4">Detalles Adicionales</h3>
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Creador del Proyecto</p>
-                      <p className="text-foreground font-mono text-sm break-all">{project.owner}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Estado</p>
+                <div className="mt-8 space-y-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-4">Ubicación</h3>
+                    <div className="space-y-4">
                       <p className="text-foreground">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                          project.isActive 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {project.isActive ? 'Activo' : 'Inactivo'}
-                        </span>
+                        {[project.specificAddress, project.city, project.department, project.country]
+                          .filter(part => part && part.trim() !== '')
+                          .join(', ')}
                       </p>
+                      <div className="h-[300px] rounded-lg overflow-hidden border border-border">
+                        <ProjectMap 
+                          location={[
+                            project.specificAddress,
+                            project.city,
+                            project.department,
+                            project.country
+                          ].filter(Boolean).join(', ')} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-4">Detalles Adicionales</h3>
+                    <div className="space-y-6">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Creador del Proyecto</p>
+                        <p className="text-foreground font-mono text-sm break-all">{project.owner}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Estado</p>
+                        <p className="text-foreground">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
+                            project.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {project.isActive ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

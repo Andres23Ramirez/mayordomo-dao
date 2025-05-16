@@ -1,34 +1,38 @@
-import pkg from "hardhat";
-const { ethers } = pkg;
+import { ethers } from "hardhat";
 
 async function main() {
-  const farmingProjects = await ethers.getContractAt(
+  console.log("Connecting to contract...");
+  const contract = await ethers.getContractAt(
     "FarmingProjects",
-    "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+    "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f"
   );
 
-  // Obtener el contador de proyectos
-  const counter = await farmingProjects.projectCounter();
-  console.log(`Total projects: ${counter}`);
+  const totalProjects = await contract.projectCounter();
+  console.log(`Total projects found: ${totalProjects}`);
 
-  // Eliminar cada proyecto
-  for (let i = 1; i <= counter; i++) {
+  let deletedCount = 0;
+  let errorCount = 0;
+
+  for (let i = 1; i <= totalProjects; i++) {
+    console.log(`\nAttempting to delete project ${i}...`);
     try {
-      console.log(`Deleting project ${i}...`);
-      const tx = await farmingProjects.deleteProject(i);
+      const tx = await contract.deleteProject(i);
       await tx.wait();
-      console.log(`Project ${i} deleted successfully!`);
+      console.log(`Successfully deleted project ${i}`);
+      deletedCount++;
     } catch (error) {
-      console.error(`Error deleting project ${i}:`, error);
+      console.log(`Error deleting project ${i}:`, error);
+      errorCount++;
     }
   }
 
-  console.log("All projects deleted!");
+  console.log("\nDeletion summary:");
+  console.log(`Total projects: ${totalProjects}`);
+  console.log(`Successfully deleted: ${deletedCount}`);
+  console.log(`Errors encountered: ${errorCount}`);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
