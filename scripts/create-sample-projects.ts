@@ -6,7 +6,10 @@ const sampleProjects = [
     title: "Cultivo Sostenible de Café Orgánico",
     description:
       "Proyecto de café orgánico cultivado bajo sombra, siguiendo prácticas sostenibles y comercio justo. Beneficiará a 50 familias de agricultores locales.",
-    location: "Sierra Norte de Oaxaca, México",
+    specificAddress: "Vereda El Progreso",
+    city: "Pitalito",
+    department: "Huila",
+    country: "Colombia",
     imageUrl:
       "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=800", // Imagen de cultivo de café
     targetAmount: ethers.parseEther("2.5"), // 2.5 ETH
@@ -15,7 +18,10 @@ const sampleProjects = [
     title: "Granja Hidropónica Comunitaria",
     description:
       "Sistema hidropónico para cultivo de verduras y hortalizas, utilizando tecnología de punta y energía solar. Producirá alimentos para 200 familias.",
-    location: "Guadalajara, Jalisco",
+    specificAddress: "Km 5 Vía Principal",
+    city: "Medellín",
+    department: "Antioquia",
+    country: "Colombia",
     imageUrl:
       "https://images.unsplash.com/photo-1519566335946-e6f65f0f4fdf?w=800", // Imagen de cultivo hidropónico
     targetAmount: ethers.parseEther("1.8"), // 1.8 ETH
@@ -24,7 +30,10 @@ const sampleProjects = [
     title: "Apicultura Sustentable Maya",
     description:
       "Proyecto de apicultura tradicional maya para la producción de miel orgánica y conservación de abejas nativas. Incluye capacitación para 30 apicultores.",
-    location: "Yucatán, México",
+    specificAddress: "Vereda San José",
+    city: "Santa Marta",
+    department: "Magdalena",
+    country: "Colombia",
     imageUrl:
       "https://images.unsplash.com/photo-1587127964224-9ade55286dc3?w=800", // Imagen de apicultura
     targetAmount: ethers.parseEther("1.2"), // 1.2 ETH
@@ -45,7 +54,10 @@ async function main() {
       const tx = await farmingProjects.createProject(
         project.title,
         project.description,
-        project.location,
+        project.specificAddress,
+        project.city,
+        project.department,
+        project.country,
         project.imageUrl,
         project.targetAmount
       );

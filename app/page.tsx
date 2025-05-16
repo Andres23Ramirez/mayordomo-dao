@@ -94,7 +94,9 @@ export default function Home() {
                           <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">
                             Agricultura
                           </span>
-                          <span className="ml-2 text-sm text-muted-foreground">{`${project.city}, ${project.department}`}</span>
+                          <span className="ml-2 text-sm text-muted-foreground">
+                            {`${project.city}, ${project.department}`}
+                          </span>
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-2">{project.title}</h3>
                         <p className="text-muted-foreground mb-4">{project.description}</p>
