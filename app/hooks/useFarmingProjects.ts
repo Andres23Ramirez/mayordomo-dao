@@ -155,31 +155,29 @@ export function useFarmingProjects(): FarmingProjectsHook {
     [writeContractAsync, fetchAllProjects]
   );
 
-  const investInProjectFn = useCallback(
-    async (projectId: number, amount: bigint): Promise<string | null> => {
-      try {
-        const result = await writeContractAsync({
-          address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
-          abi: CONTRACTS.FARMING_PROJECTS.ABI,
-          functionName: "investInProject",
-          args: [BigInt(projectId)],
-          value: amount,
-        });
-
-        // Esperar un poco y actualizar
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        await fetchAllProjects();
-
-        return result;
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Error investing in project"
-        );
-        return null;
+  const investInProjectFn = async (projectId: number, amount: bigint) => {
+    try {
+      if (!writeContractAsync) {
+        throw new Error("Contract not initialized or wallet not connected");
       }
-    },
-    [writeContractAsync, fetchAllProjects]
-  );
+
+      const tx = await writeContractAsync({
+        address: CONTRACTS.FARMING_PROJECTS.ADDRESS,
+        abi: CONTRACTS.FARMING_PROJECTS.ABI,
+        functionName: "investInProject",
+        args: [BigInt(projectId)],
+        value: amount,
+      });
+
+      // Esperar un poco y actualizar los proyectos
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await fetchAllProjects();
+
+      return tx;
+    } catch (error: any) {
+      throw error;
+    }
+  };
 
   return {
     loading,

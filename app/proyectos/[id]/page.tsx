@@ -9,21 +9,24 @@ import { useState, useEffect } from 'react';
 export default function ProjectPage() {
   const params = useParams();
   const projectId = typeof params.id === 'string' ? parseInt(params.id) : 0;
-  const { loading, error, projectDetails, investInProjectFn } = useFarmingProjects();
+  const { loading, error: contractError, projectDetails, investInProjectFn } = useFarmingProjects();
   const [investing, setInvesting] = useState(false);
+  const [transactionError, setTransactionError] = useState<string | null>(null);
   
   // Encontrar el proyecto correcto usando el ID
   const project = projectDetails.find(p => p.id === projectId);
   
-  // Inicializar el monto de inversión con el monto objetivo
+  // Calcular el monto restante disponible para invertir
+  const remainingAmount = project ? project.targetAmount - project.currentAmount : BigInt(0);
+  
+  // Actualizar el monto de inversión cuando el proyecto se carga
   const [investmentAmount, setInvestmentAmount] = useState('');
 
-  // Actualizar el monto de inversión cuando el proyecto se carga
   useEffect(() => {
     if (project) {
-      setInvestmentAmount(formatEther(project.targetAmount));
+      setInvestmentAmount(formatEther(remainingAmount));
     }
-  }, [project]);
+  }, [project, remainingAmount]);
 
   if (loading) {
     return (
@@ -39,16 +42,16 @@ export default function ProjectPage() {
     );
   }
 
-  if (error || !project) {
+  if (contractError || !project) {
     return (
       <main className="min-h-screen flex flex-col">
         <Navbar />
         <div className="container mx-auto px-4 py-16">
           <h1 className="text-4xl font-bold text-foreground">
-            {error ? 'Error al cargar el proyecto' : 'Proyecto no encontrado'}
+            {contractError ? 'Error al cargar el proyecto' : 'Proyecto no encontrado'}
           </h1>
           <p className="text-muted-foreground mt-4">
-            {error || 'El proyecto que buscas no existe o ha sido eliminado.'}
+            {contractError || 'El proyecto que buscas no existe o ha sido eliminado.'}
           </p>
         </div>
       </main>
@@ -56,8 +59,10 @@ export default function ProjectPage() {
   }
 
   const handleInvest = async () => {
+    setTransactionError(null);
+    
     if (!investmentAmount || parseFloat(investmentAmount) <= 0) {
-      alert('Por favor ingresa un monto válido');
+      setTransactionError('Por favor ingresa un monto válido');
       return;
     }
 
@@ -67,17 +72,16 @@ export default function ProjectPage() {
       const result = await investInProjectFn(projectId, amountInWei);
       if (result) {
         alert('Inversión realizada con éxito');
-        setInvestmentAmount('');
+        // El monto se actualizará automáticamente cuando se actualicen los datos del proyecto
       }
     } catch (error: any) {
       console.error('Error al invertir:', error);
-      // Manejar específicamente el caso de rechazo de transacción
       if (error.message.includes('User denied transaction') || 
           error.message.includes('User rejected') ||
           error.message.includes('rejected the request')) {
-        alert('Transacción cancelada por el usuario');
+        setTransactionError('Transacción cancelada por el usuario');
       } else {
-        alert('Error al realizar la inversión. Por favor intenta de nuevo.');
+        setTransactionError('Error al realizar la inversión. Por favor intenta de nuevo.');
       }
     } finally {
       setInvesting(false);
@@ -138,6 +142,13 @@ export default function ProjectPage() {
 
               <div className="bg-card rounded-lg p-6 border border-border">
                 <h3 className="text-xl font-bold text-foreground mb-4">Detalles de Inversión</h3>
+                
+                {transactionError && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-800 rounded-lg">
+                    {transactionError}
+                  </div>
+                )}
+                
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Meta de inversión</p>
@@ -176,7 +187,7 @@ export default function ProjectPage() {
                         id="investment"
                         type="range"
                         min="0"
-                        max={formatEther(project.targetAmount)}
+                        max={formatEther(remainingAmount)}
                         step="0.01"
                         value={investmentAmount}
                         onChange={(e) => setInvestmentAmount(e.target.value)}
@@ -206,14 +217,14 @@ export default function ProjectPage() {
                       <div 
                         className="absolute top-2 inset-x-0 bg-colombia-green rounded-md h-1.5 z-20" 
                         style={{ 
-                          width: `${(parseFloat(investmentAmount || '0') / parseFloat(formatEther(project.targetAmount))) * 100}%`,
+                          width: `${(parseFloat(investmentAmount || '0') / parseFloat(formatEther(remainingAmount))) * 100}%`,
                           maxWidth: '100%'
                         }}
                       />
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground mt-3">
                       <span>0 ETH</span>
-                      <span>{formatEther(project.targetAmount)} ETH</span>
+                      <span>{formatEther(remainingAmount)} ETH</span>
                     </div>
                   </div>
                 </div>
