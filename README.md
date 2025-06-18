@@ -4,6 +4,10 @@ A decentralized platform connecting Colombian farmers with investors for sustain
 
 🌐 [View Live Demo](https://mayordomo-dao.vercel.app/)
 
+## Technologies
+
+Next.js, TypeScript, Solidity, Hardhat, Wagmi, RainbowKit, Tailwind CSS, Shadcn/ui, Base Sepolia (Ethereum L2), Viem, React Query
+
 ## Prerequisites
 
 - Node.js (v18 or higher)
